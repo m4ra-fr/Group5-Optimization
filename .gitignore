@@ -39,3 +39,12 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# local user/2FA data, don't commit
+sqlite.db
+
+# personal test script
+scripts/reset-2fa.sh
+
+# Delete Email in Database
+scripts/delete-user.sh

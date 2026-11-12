@@ -2,8 +2,18 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { authClient } from '@/lib/auth-client';
 
 export default function FarmerDashboardPage() {
+
+  const router = useRouter();
+
+  const handleSignOut = async () => {
+    await authClient.signOut();
+    router.push('/login');
+  };
+
   // Navigation & Interactive Tabs
   const [activeTab, setActiveTab] = useState<'harvest' | 'loss' | 'marketplace'>('harvest');
 
@@ -133,7 +143,7 @@ export default function FarmerDashboardPage() {
         className="fixed inset-0 bg-cover bg-center bg-no-repeat -z-10"
         style={{ backgroundImage: `url("/images/Farmer's-Dashboard-Background.jfif")` }}
       >
-        <div className="absolute inset-0 bg-gradient-to-b from-emerald-950/40 via-emerald-900/30 to-black/50 backdrop-blur-[1px]"></div>
+        <div className="absolute inset-0 bg-linear-to-b from-emerald-950/40 via-emerald-900/30 to-black/50 backdrop-blur-[1px]"></div>
       </div>
 
       {/* HEADER */}
@@ -158,9 +168,19 @@ export default function FarmerDashboardPage() {
           <span className="hidden md:inline-flex items-center gap-1.5 text-xs sm:text-sm font-black bg-emerald-100 text-emerald-900 px-3.5 py-1.5 rounded-full border border-emerald-300">
              RADA Farmer ID: #84920
           </span>
-          <Link href="/login" className="text-xs sm:text-sm font-black text-gray-800 hover:text-emerald-800">
-            Sign Out
+          <Link
+            href="/security"
+            className="text-xs sm:text-sm font-black text-emerald-900 bg-emerald-100 hover:bg-emerald-200 px-3.5 py-1.5 rounded-full border border-emerald-300 transition-all"
+          >
+          🔒 Security
           </Link>
+          <button
+            type="button"
+            onClick={handleSignOut}
+            className="text-xs sm:text-sm font-black text-gray-800 hover:text-emerald-800 cursor-pointer"
+          >
+            Sign Out
+          </button>
         </div>
       </header>
 
@@ -263,7 +283,7 @@ export default function FarmerDashboardPage() {
             </div>
           </div>
 
-          <div className="lg:col-span-4 bg-gradient-to-br from-emerald-900/90 via-emerald-950/90 to-black/90 text-white p-6 sm:p-8 rounded-3xl border border-white/20 backdrop-blur-md shadow-2xl flex flex-col justify-between space-y-6">
+          <div className="lg:col-span-4 bg-linear-to-br from-emerald-900/90 via-emerald-950/90 to-black/90 text-white p-6 sm:p-8 rounded-3xl border border-white/20 backdrop-blur-md shadow-2xl flex flex-col justify-between space-y-6">
             <div className="space-y-4">
               <div className="flex justify-between items-center">
                 <span className="bg-[#ccff00] text-emerald-950 text-xs font-black uppercase px-3 py-1 rounded-full">
