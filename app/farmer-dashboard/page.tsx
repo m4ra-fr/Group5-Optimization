@@ -136,7 +136,7 @@ export default function FarmerDashboardPage() {
         <div className="fd-flex fd-between" style={{ alignItems: 'flex-end' }}>
           <div>
             <div className="fd-lbl">{new Date().toLocaleDateString('en-JM', { weekday: 'long', day: 'numeric', month: 'long' })}</div>
-            <h1 className="fd-h1">Welcome back, <span className="fd-ac">{name}</span></h1>
+            <h1 className="fd-h1">Welcome, <span className="fd-ac">{name}</span></h1>
             <div style={{ color: 'var(--mu)', fontSize: 16 }}>Here is how your fields are doing today.</div>
           </div>
           {alertNeeded && (
