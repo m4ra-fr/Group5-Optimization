@@ -3,10 +3,13 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import { authClient } from '@/lib/auth-client';
 
 export default function SignupPage() {
   const router = useRouter();
   const [role, setRole] = useState<'farmer' | 'buyer'>('farmer');
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
 
   // Common Fields
   const [fullName, setFullName] = useState('');
@@ -29,14 +32,27 @@ export default function SignupPage() {
   const [trnNumber, setTrnNumber] = useState('');
   const [buyerPaymentPref, setBuyerPaymentPref] = useState<'card' | 'cash' | 'lynk'>('card');
 
-  const handleSignupSubmit = (e: React.FormEvent) => {
+  const handleSignupSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
-    if (role === 'farmer') {
-      router.push('/farmer-dashboard');
-    } else {
-      router.push('/buyer-dashboard');
+    setError('');
+    setLoading(true);
+
+    const { error: signUpError } = await authClient.signUp.email({
+      name: fullName,
+      email,
+      password,
+      role,
+      phone,
+    });
+
+    setLoading(false);
+
+    if (signUpError) {
+      setError(signUpError.message ?? 'Could not create your account.');
+      return;
     }
+
+    router.push('/security');
   };
 
   return (
@@ -47,7 +63,7 @@ export default function SignupPage() {
         className="fixed inset-0 bg-cover bg-center bg-no-repeat -z-10"
         style={{ backgroundImage: `url("/images/Farmer's-Dashboard-Background.jfif")` }}
       >
-        <div className="absolute inset-0 bg-gradient-to-r from-emerald-950/90 via-emerald-900/80 to-black/85 backdrop-blur-[2px]"></div>
+        <div className="absolute inset-0 bg-linear-to-r from-emerald-950/90 via-emerald-900/80 to-black/85 backdrop-blur-[2px]"></div>
       </div>
 
       {/* TOP HEADER BAR */}
@@ -365,11 +381,18 @@ export default function SignupPage() {
               </div>
             )}
 
+            {error && (
+              <p className="text-xs font-bold text-red-700 bg-red-50 border border-red-200 rounded-xl px-4 py-3">
+                {error}
+              </p>
+            )}
+
             <button
               type="submit"
+              disabled={loading}
               className="w-full bg-[#ccff00] hover:bg-lime-400 text-emerald-950 font-black text-sm sm:text-base py-4 rounded-2xl border border-lime-400 shadow-xl transition-all cursor-pointer hover:scale-[1.01] active:scale-[0.99] mt-3"
             >
-              Complete Registration & Access {role === 'farmer' ? 'Field Control' : 'Marketplace'} →
+              Create Account & Set Up Security → {role === 'farmer' ? 'Field Control' : 'Marketplace'} →
             </button>
 
           </form>

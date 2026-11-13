@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import { authClient } from '@/lib/auth-client';
 
 // =========================================================================
 // TESTIMONIAL DATASET ACROSS JAMAICAN PARISHES
@@ -64,6 +65,8 @@ export default function LoginPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [rememberMe, setRememberMe] = useState(true);
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
 
   // Testimonial Deck State
   const [currentSlide, setCurrentSlide] = useState(0);
@@ -84,16 +87,29 @@ export default function LoginPage() {
     setCurrentSlide((prev) => (prev - 1 + farmerTestimonials.length) % farmerTestimonials.length);
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
-  e.preventDefault();
-  
-  // Dynamically route based on selected tab role
-  if (role === 'buyer') {
-    router.push('/buyer-dashboard');
-  } else {
-    router.push('/farmer-dashboard');
-  }
-};
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError('');
+    setLoading(true);
+
+    const { data, error: signInError } = await authClient.signIn.email({
+      email,
+      password,
+      rememberMe,
+    });
+
+    setLoading(false);
+
+    if (signInError) {
+      setError(signInError.message ?? 'Could not sign you in.');
+      return;
+    }
+
+    // Accounts with 2FA on are redirected to /two-factor automatically
+    if (!data || 'twoFactorRedirect' in data) return;
+
+    router.push(data.user.role === 'buyer' ? '/buyer-dashboard' : '/farmer-dashboard');
+  };
 
   const activeReview = farmerTestimonials[currentSlide];
 
@@ -107,7 +123,7 @@ export default function LoginPage() {
         className="absolute inset-0 bg-cover bg-center bg-no-repeat -z-10 transition-all duration-700"
         style={{ backgroundImage: `url('/images/farm-background.jpg')` }}
       >
-        <div className="absolute inset-0 bg-gradient-to-r from-emerald-950/85 via-emerald-900/60 to-black/75 backdrop-blur-[2px]"></div>
+        <div className="absolute inset-0 bg-linear-to-r from-emerald-950/85 via-emerald-900/60 to-black/75 backdrop-blur-[2px]"></div>
       </div>
 
       {/* ========================================================================= */}
@@ -189,7 +205,7 @@ export default function LoginPage() {
             </div>
 
             {/* TESTIMONIAL CARD BODY */}
-            <div className="flex items-start gap-4 min-h-[72px] transition-all duration-300">
+            <div className="flex items-start gap-4 min-h-18 transition-all duration-300">
               <div className="w-14 h-14 bg-[#ccff00] text-emerald-950 rounded-full font-black flex items-center justify-center text-2xl shrink-0 shadow-md">
                 {activeReview.avatar}
               </div>
@@ -273,12 +289,12 @@ export default function LoginPage() {
               
               <div className="space-y-2">
                 <label className="text-sm font-black text-gray-800 block">
-                  {role === 'farmer' ? 'RADA Registration ID or Email' : 'Company Procurement Email'}
+                  {role === 'farmer' ? 'Email Address' : 'Company Procurement Email'}
                 </label>
                 <input
-                  type="text"
+                  type="email"
                   required
-                  placeholder={role === 'farmer' ? 'e.g. RADA-84920 or farmer@gmail.com' : 'procurement@resort.com'}
+                  placeholder={role === 'farmer' ? 'farmer@gmail.com' : 'procurement@resort.com'}
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   className="w-full px-5 py-4 bg-gray-50 border border-gray-300 rounded-2xl text-sm sm:text-base font-semibold text-gray-900 focus:outline-none focus:border-emerald-700 focus:bg-white transition-all shadow-inner"
@@ -314,8 +330,15 @@ export default function LoginPage() {
                 </label>
               </div>
 
+              {error && (
+                <p className="text-sm font-bold text-red-700 bg-red-50 border border-red-200 rounded-xl px-4 py-3">
+                  {error}
+                </p>
+              )}
+
               <button
                 type="submit"
+                disabled={loading}
                 className="w-full bg-[#ccff00] hover:bg-lime-400 text-emerald-950 font-black text-base py-4.5 rounded-2xl border border-lime-400 shadow-xl transition-all cursor-pointer hover:scale-[1.01] active:scale-[0.99] mt-3"
               >
                 Sign In to {role === 'farmer' ? 'Field Control' : 'Marketplace'} →
