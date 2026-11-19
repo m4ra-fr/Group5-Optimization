@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { authClient } from '@/lib/auth-client';
+import "./login.css"; // Import the CSS file for styling
 
 // =========================================================================
 // TESTIMONIAL DATASET ACROSS JAMAICAN PARISHES
@@ -67,6 +68,9 @@ export default function LoginPage() {
   const [rememberMe, setRememberMe] = useState(true);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+
+  //Show Password
+  const [showPassword, setShowPassword] = useState(false);
 
   // Testimonial Deck State
   const [currentSlide, setCurrentSlide] = useState(0);
@@ -308,14 +312,59 @@ export default function LoginPage() {
                     Forgot password?
                   </a>
                 </div>
-                <input
-                  type="password"
-                  required
-                  placeholder="••••••••"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  className="w-full px-5 py-4 bg-gray-50 border border-gray-300 rounded-2xl text-sm sm:text-base font-semibold text-gray-900 focus:outline-none focus:border-emerald-700 focus:bg-white transition-all shadow-inner"
-                />
+                <div className="password-wrapper">
+                  <input
+                    type={showPassword ? "text" : "password"}
+                    placeholder="Password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    required
+                    className="w-full px-5 py-4 pr-12 bg-gray-50 border border-gray-300 rounded-2xl text-sm sm:text-base font-semibold text-gray-900 focus:outline-none focus:border-emerald-700 focus:bg-white transition-all shadow-inner"
+                  />
+
+                  <button
+                    type="button"
+                    className="password-toggle"
+                    onClick={() => setShowPassword(!showPassword)}
+                    aria-label={showPassword ? "Hide password" : "Show password"}
+                  >
+                    {showPassword ? (
+                      // Eye with slash (Hide password)
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="20"
+                        height="20"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      >
+                        <path d="M3 3l18 18" />
+                        <path d="M10.58 10.58a2 2 0 002.83 2.83" />
+                        <path d="M9.88 5.09A10.93 10.93 0 0112 4.5c5 0 9.27 3.11 11 7.5a11.8 11.8 0 01-4.17 5.45" />
+                        <path d="M6.61 6.61A11.8 11.8 0 001 12c1.73 4.39 6 7.5 11 7.5a10.93 10.93 0 005.09-1.24" />
+                      </svg>
+                    ) : (
+                      // Eye (Show password)
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="20"
+                        height="20"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      >
+                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+                        <circle cx="12" cy="12" r="3" />
+                      </svg>
+                    )}
+                  </button>
+                </div>
               </div>
 
               <div className="flex items-center justify-between pt-1">
@@ -341,7 +390,7 @@ export default function LoginPage() {
                 disabled={loading}
                 className="w-full bg-[#ccff00] hover:bg-lime-400 text-emerald-950 font-black text-base py-4.5 rounded-2xl border border-lime-400 shadow-xl transition-all cursor-pointer hover:scale-[1.01] active:scale-[0.99] mt-3"
               >
-                Sign In to {role === 'farmer' ? 'Field Control' : 'Marketplace'} →
+                Sign In →
               </button>
 
             </form>
@@ -350,7 +399,7 @@ export default function LoginPage() {
             <div className="text-center border-t border-gray-100 pt-5 text-sm font-semibold text-gray-600">
               Don't have an account yet?{' '}
               <Link href="/signup" className="font-extrabold text-emerald-800 hover:underline">
-                Register your Farm
+                Register your {role === 'farmer' ? 'Farm' : 'Business'}
               </Link>
             </div>
 

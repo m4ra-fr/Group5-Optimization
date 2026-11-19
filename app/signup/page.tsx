@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { authClient } from '@/lib/auth-client';
+import "./signup.css"; // Import the CSS file for styling
 
 export default function SignupPage() {
   const router = useRouter();
@@ -16,6 +17,9 @@ export default function SignupPage() {
   const [email, setEmail] = useState('');
   const [phone, setPhone] = useState('');
   const [password, setPassword] = useState('');
+
+// Show/Hide Password
+const [showPassword, setShowPassword] = useState(false);
 
   // Farmer Specific Fields
   const [farmName, setFarmName] = useState('');
@@ -168,16 +172,63 @@ export default function SignupPage() {
               </div>
 
               <div className="space-y-1">
-                <label className="text-xs font-black text-gray-800 block">Password</label>
-                <input
-                  type="password"
-                  required
-                  placeholder="••••••••"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  className="w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-xl text-xs sm:text-sm font-semibold text-gray-900 focus:outline-none focus:border-emerald-700"
-                />
+                <label className="text-xs font-black text-gray-800 block">
+                  Password
+                </label>
+
+                <div className="password-wrapper">
+                  <input
+                    type={showPassword ? "text" : "password"}
+                    required
+                    placeholder="••••••••"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    className="w-full px-4 py-3 pr-12 bg-gray-50 border border-gray-300 rounded-xl text-xs sm:text-sm font-semibold text-gray-900 focus:outline-none focus:border-emerald-700 focus:bg-white transition-all shadow-inner"
+                  />
+
+                  <button
+                    type="button"
+                    className="password-toggle"
+                    onClick={() => setShowPassword(!showPassword)}
+                    aria-label={showPassword ? "Hide password" : "Show password"}
+                  >
+                    {showPassword ? (
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="20"
+                        height="20"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      >
+                        <path d="M3 3l18 18" />
+                        <path d="M10.58 10.58a2 2 0 002.83 2.83" />
+                        <path d="M9.88 5.09A10.93 10.93 0 0112 4.5c5 0 9.27 3.11 11 7.5a11.8 11.8 0 01-4.17 5.45" />
+                        <path d="M6.61 6.61A11.8 11.8 0 001 12c1.73 4.39 6 7.5 11 7.5a10.93 10.93 0 005.09-1.24" />
+                      </svg>
+                    ) : (
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="20"
+                        height="20"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      >
+                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+                        <circle cx="12" cy="12" r="3" />
+                      </svg>
+                    )}
+                  </button>
+                </div>
               </div>
+
             </div>
 
             {/* FARMER SECTION */}
@@ -392,7 +443,7 @@ export default function SignupPage() {
               disabled={loading}
               className="w-full bg-[#ccff00] hover:bg-lime-400 text-emerald-950 font-black text-sm sm:text-base py-4 rounded-2xl border border-lime-400 shadow-xl transition-all cursor-pointer hover:scale-[1.01] active:scale-[0.99] mt-3"
             >
-              Create Account & Set Up Security → {role === 'farmer' ? 'Field Control' : 'Marketplace'} →
+              Create Account →
             </button>
 
           </form>
